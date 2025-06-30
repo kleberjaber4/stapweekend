@@ -406,7 +406,7 @@ function App() {
     },
     {
       id: 16,
-      description: 'Voltooi de onderstaande Wordrow puzzel',
+      description: 'Voltooi de onderstaande Wordle-puzzel',
       validator: (pwd) => pwd.toLowerCase().includes('geest'),
       showWordrow: true
     },
@@ -691,16 +691,24 @@ function App() {
                       {rule.showWordrow && (
                         <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                           <div className="flex items-center gap-2 mb-4">
-                            <span className="font-semibold text-lg">🎯 Wordrow Puzzel</span>
+                            <span className="font-semibold text-lg">🎯 Wordle-puzzel</span>
                             {isCompleted && (
                               <span className="text-green-600 font-bold">✅ Voltooid!</span>
                             )}
                           </div>
                           <div className="rounded-lg overflow-hidden border-2 border-gray-300 shadow-lg">
-                            <div className="pm-embed-div" data-id="abc1d1ef" data-set="7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570" data-puzzleType="wordrow" data-height="700px" data-mobileMargin="10px"></div>
+                            <iframe 
+                              height="700px" 
+                              width="100%" 
+                              allow="web-share; fullscreen" 
+                              style={{border: 'none', width: '100%', position: 'static', display: 'block', margin: 0}} 
+                              src="https://puzzleme.amuselabs.com/pmm/wordrow?id=abc1d1ef&set=7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570&embed=1" 
+                              aria-label="Puzzle Me Game"
+                              title="Wordle Puzzle"
+                            />
                           </div>
                           <p className="text-sm text-gray-600 mt-2">
-                            Voltooi de Wordrow-puzzel om deze regel te behalen.
+                            Voltooi de Wordle-puzzel om deze regel te behalen.
                           </p>
                         </div>
                       )}
