@@ -11,6 +11,7 @@ interface Rule {
   showMap?: boolean;
   showChess?: boolean;
   showWordle?: boolean;
+  showWordrow?: boolean;
   validationFeedback?: (password: string) => string | null;
 }
 
@@ -77,6 +78,7 @@ function App() {
     maxGuesses: 6
   });
   const [wordleError, setWordleError] = useState<string>('');
+  const [wordrowCompleted, setWordrowCompleted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Gebruik een kleine fallback-woordenlijst voor het genereren van het Wordle-woord
@@ -288,10 +290,13 @@ function App() {
     const rule14Visible = maxVisibleRule >= 14;
     const rule14Completed = completedRules.has(14);
     if (!rule14Visible || rule14Completed) return pwd;
+    
+    // Only match uppercase Roman numerals
     const romanPattern = /[IVXLCDM]+/g;
     const parts = [];
     let lastIndex = 0;
     let match;
+    
     while ((match = romanPattern.exec(pwd)) !== null) {
       if (match.index > lastIndex) {
         parts.push(pwd.slice(lastIndex, match.index));
@@ -311,8 +316,8 @@ function App() {
       }
       parts.push(
         <span key={match.index} className="relative">
-          <span className="absolute inset-0 bg-yellow-200 bg-opacity-50 rounded"></span>
-          <span className="relative font-bold" title={`Waarde: ${value}`}>
+          <span className="absolute inset-0 bg-yellow-200 bg-opacity-30 rounded"></span>
+          <span className="relative" title={`Waarde: ${value}`}>
             {romanText}
           </span>
         </span>
@@ -324,6 +329,18 @@ function App() {
     }
     return parts.length > 1 ? parts : pwd;
   };
+
+  // Listen for Wordrow completion
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin === 'https://puzzleme.amuselabs.com' && event.data.type === 'puzzleComplete') {
+        setWordrowCompleted(true);
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   // --- REGELS ---
   const rules: Rule[] = [
@@ -365,12 +382,12 @@ function App() {
     },
     {
       id: 7,
-      description: 'De cijfers in je wachtwoord moeten optellen tot 40',
+      description: 'De cijfers in je wachtwoord moeten optellen tot 50',
       validator: (pwd) => {
         const digits = pwd.match(/\d/g);
         if (!digits) return false;
         const sum = digits.reduce((acc, digit) => acc + parseInt(digit), 0);
-        return sum === 40;
+        return sum === 50;
       }
     },
     {
@@ -418,6 +435,7 @@ function App() {
       id: 14,
       description: 'Voeg romeinse cijfers toe die samen de waarde van 35 hebben',
       validator: (pwd) => {
+        // Only match uppercase Roman numerals
         const romanMatches = pwd.match(/[IVXLCDM]+/g);
         if (!romanMatches) return false;
         const romanNumerals = { 'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000 };
@@ -455,16 +473,12 @@ function App() {
     },
     {
       id: 16,
-      description: 'Voeg het Wordle-woord van vandaag toe',
-      validator: (pwd) => {
-        if (!liveData || !wordleState.gameWon) return false;
-        return pwd.toUpperCase().includes(liveData.wordleWord.toUpperCase());
-      },
-      requiresLiveData: true,
-      showWordle: true,
-      tip: 'Speel eerst het Wordle-spel hieronder om het woord te ontdekken. Alleen geldige Nederlandse woorden worden geaccepteerd.'
+      description: 'Voltooi de Wordrow-puzzel hieronder',
+      validator: (pwd) => wordrowCompleted,
+      requiresLiveData: false,
+      showWordrow: true,
+      tip: 'Speel de Wordrow-puzzel hieronder om deze regel te voltooien.'
     },
-    // ...regels 17 t/m 25 blijven ongewijzigd...
     {
       id: 17,
       description: 'Benoem het thema van groep 7/8 met de Zomerspelen in 2001',
@@ -511,7 +525,7 @@ function App() {
     },
     {
       id: 22,
-      description: 'Je wachtwoord moet de beste oplossing in algebraïsche schaaknotatie bevatten',
+      description: 'Je wachtwoord moet de beste zet in algebraïsche schaaknotatie bevatten',
       validator: (pwd) => liveData ? pwd.includes(liveData.chessMove) : false,
       requiresLiveData: true,
       showChess: true,
@@ -594,7 +608,7 @@ function App() {
     if (newCompletedRules.size === rules.length) {
       setGameComplete(true);
     }
-  }, [password, liveData, wordleState.gameWon]);
+  }, [password, liveData, wordleState.gameWon, wordrowCompleted]);
 
   const handleRefreshData = async () => {
     setIsLoadingData(true);
@@ -749,6 +763,30 @@ function App() {
                         <p className="text-sm text-orange-600 mt-2 font-semibold">
                           ⚠️ {feedback}
                         </p>
+                      )}
+                      {rule.showWordrow && (
+                        <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="font-semibold text-lg">🎯 Wordrow Puzzel</span>
+                            {wordrowCompleted && (
+                              <span className="text-green-600 font-bold">✅ Voltooid!</span>
+                            )}
+                          </div>
+                          <div className="rounded-lg overflow-hidden border-2 border-gray-300 shadow-lg">
+                            <iframe 
+                              height="700px" 
+                              width="100%" 
+                              allow="web-share; fullscreen" 
+                              style={{border: 'none', width: '100%', position: 'static', display: 'block', margin: 0}} 
+                              src="https://puzzleme.amuselabs.com/pmm/wordrow?id=abc1d1ef&set=7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570&embed=1" 
+                              aria-label="Puzzle Me Game"
+                              title="Wordrow Puzzle"
+                            />
+                          </div>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Voltooi de Wordrow-puzzel om deze regel te behalen.
+                          </p>
+                        </div>
                       )}
                       {rule.showWordle && liveData && (
                         <div className="mt-4 p-4 bg-gray-100 rounded-lg">
