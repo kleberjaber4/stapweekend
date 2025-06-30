@@ -473,11 +473,10 @@ function App() {
     },
     {
       id: 16,
-      description: 'Voltooi de Wordrow-puzzel hieronder',
-      validator: (pwd) => wordrowCompleted,
+      description: 'Je wachtwoord moet het woord "Geest" bevatten',
+      validator: (pwd) => pwd.toLowerCase().includes('geest'),
       requiresLiveData: false,
-      showWordrow: true,
-      tip: 'Speel de Wordrow-puzzel hieronder om deze regel te voltooien.'
+      tip: 'Voeg het woord "Geest" toe aan je wachtwoord (hoofdletters maken niet uit).'
     },
     {
       id: 17,
