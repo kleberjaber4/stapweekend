@@ -5,6 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Het Stapweekend Wachtwoord Spel</title>
+    <!-- Include the CryptoJS library for hashing the user id before sending it to the PuzzleMe server. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- Include the javascript library for embedding this puzzle. -->
+    <script id="pm-script" src="https://puzzleme.amuselabs.com/pmm/js/puzzleme-embed.js"></script>
+    <!-- Specify the Amuse Labs server name from where the puzzles will be served and trigger the embed flow. -->
+    <script>
+        PM_Config.PM_BasePath = "https://puzzleme.amuselabs.com/pmm/";
+    </script>
   </head>
   <body>
     <div id="root"></div>

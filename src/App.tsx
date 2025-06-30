@@ -284,52 +284,6 @@ function App() {
     return 'bg-gray-400 text-white';
   };
 
-  // Function to highlight Roman numerals in password - FIXED POSITIONING
-  const highlightRomanNumerals = (pwd: string) => {
-    if (!pwd) return pwd;
-    const rule14Visible = maxVisibleRule >= 14;
-    const rule14Completed = completedRules.has(14);
-    if (!rule14Visible || rule14Completed) return pwd;
-    
-    // Only match uppercase Roman numerals
-    const romanPattern = /[IVXLCDM]+/g;
-    const parts = [];
-    let lastIndex = 0;
-    let match;
-    
-    while ((match = romanPattern.exec(pwd)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(pwd.slice(lastIndex, match.index));
-      }
-      const romanText = match[0];
-      let value = 0;
-      const romanValues = { 'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000 };
-      for (let i = 0; i < romanText.length; i++) {
-        const current = romanValues[romanText[i] as keyof typeof romanValues];
-        const next = romanValues[romanText[i + 1] as keyof typeof romanValues];
-        if (next && current < next) {
-          value += next - current;
-          i++;
-        } else {
-          value += current;
-        }
-      }
-      parts.push(
-        <span key={match.index} className="relative">
-          <span className="absolute inset-0 bg-yellow-200 bg-opacity-30 rounded"></span>
-          <span className="relative" title={`Waarde: ${value}`}>
-            {romanText}
-          </span>
-        </span>
-      );
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < pwd.length) {
-      parts.push(pwd.slice(lastIndex));
-    }
-    return parts.length > 1 ? parts : pwd;
-  };
-
   // Listen for Wordrow completion
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -433,29 +387,8 @@ function App() {
     },
     {
       id: 14,
-      description: 'Voeg romeinse cijfers toe die samen de waarde van 35 hebben',
-      validator: (pwd) => {
-        // Only match uppercase Roman numerals
-        const romanMatches = pwd.match(/[IVXLCDM]+/g);
-        if (!romanMatches) return false;
-        const romanNumerals = { 'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000 };
-        for (const match of romanMatches) {
-          let value = 0;
-          for (let i = 0; i < match.length; i++) {
-            const current = romanNumerals[match[i] as keyof typeof romanNumerals];
-            const next = romanNumerals[match[i + 1] as keyof typeof romanNumerals];
-            if (next && current < next) {
-              value += next - current;
-              i++;
-            } else {
-              value += current;
-            }
-          }
-          if (value === 35) return true;
-        }
-        return false;
-      },
-      tip: 'denk aan: I voor 1, V voor 5 of M voor 1000'
+      description: 'Je wachtwoord moet het woord \'Stapweekend\' bevatten',
+      validator: (pwd) => pwd.toLowerCase().includes('stapweekend')
     },
     {
       id: 15,
@@ -473,10 +406,9 @@ function App() {
     },
     {
       id: 16,
-      description: 'Je wachtwoord moet het woord "Geest" bevatten',
+      description: 'Voltooi de onderstaande Wordrow puzzel',
       validator: (pwd) => pwd.toLowerCase().includes('geest'),
-      requiresLiveData: false,
-      tip: 'Voeg het woord "Geest" toe aan je wachtwoord (hoofdletters maken niet uit).'
+      showWordrow: true
     },
     {
       id: 17,
@@ -712,13 +644,6 @@ function App() {
               placeholder="Begin met typen..."
               autoComplete="off"
             />
-            {showPassword && maxVisibleRule >= 14 && !completedRules.has(14) && password && (
-              <div className="absolute inset-0 p-4 text-lg font-mono pointer-events-none flex items-center overflow-hidden">
-                <div className="whitespace-nowrap">
-                  {highlightRomanNumerals(password)}
-                </div>
-              </div>
-            )}
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-sm text-gray-500">
@@ -767,20 +692,12 @@ function App() {
                         <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                           <div className="flex items-center gap-2 mb-4">
                             <span className="font-semibold text-lg">🎯 Wordrow Puzzel</span>
-                            {wordrowCompleted && (
+                            {isCompleted && (
                               <span className="text-green-600 font-bold">✅ Voltooid!</span>
                             )}
                           </div>
                           <div className="rounded-lg overflow-hidden border-2 border-gray-300 shadow-lg">
-                            <iframe 
-                              height="700px" 
-                              width="100%" 
-                              allow="web-share; fullscreen" 
-                              style={{border: 'none', width: '100%', position: 'static', display: 'block', margin: 0}} 
-                              src="https://puzzleme.amuselabs.com/pmm/wordrow?id=abc1d1ef&set=7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570&embed=1" 
-                              aria-label="Puzzle Me Game"
-                              title="Wordrow Puzzle"
-                            />
+                            <div className="pm-embed-div" data-id="abc1d1ef" data-set="7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570" data-puzzleType="wordrow" data-height="700px" data-mobileMargin="10px"></div>
                           </div>
                           <p className="text-sm text-gray-600 mt-2">
                             Voltooi de Wordrow-puzzel om deze regel te behalen.
