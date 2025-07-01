@@ -640,16 +640,23 @@ function App() {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors font-mono overflow-x-auto"
+              className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors font-mono"
               placeholder="Begin met typen..."
               autoComplete="off"
               style={{
-                whiteSpace: 'nowrap',
                 overflowX: 'auto',
-                scrollbarWidth: 'thin',
-                scrollbarColor: '#cbd5e0 #f7fafc'
+                whiteSpace: 'nowrap'
               }}
             />
+            {/* Horizontal scrollbar indicator */}
+            <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                style={{
+                  width: password.length > 0 ? `${Math.min((password.length / 50) * 100, 100)}%` : '0%'
+                }}
+              />
+            </div>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-sm text-gray-500">
