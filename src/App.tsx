@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Check, X, Eye, EyeOff, RefreshCw, MapPin, Crown, RotateCcw } from 'lucide-react';
+import { Check, X, Eye, EyeOff, RefreshCw, MapPin, Crown, RotateCcw, ExternalLink } from 'lucide-react';
 
 interface Rule {
   id: number;
@@ -640,9 +640,15 @@ function App() {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors font-mono"
+              className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors font-mono overflow-x-auto"
               placeholder="Begin met typen..."
               autoComplete="off"
+              style={{
+                whiteSpace: 'nowrap',
+                overflowX: 'auto',
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#cbd5e0 #f7fafc'
+              }}
             />
           </div>
           <div className="mt-4 flex items-center justify-between">
@@ -696,19 +702,19 @@ function App() {
                               <span className="text-green-600 font-bold">✅ Voltooid!</span>
                             )}
                           </div>
-                          <div className="rounded-lg overflow-hidden border-2 border-gray-300 shadow-lg">
-                            <iframe 
-                              height="700px" 
-                              width="100%" 
-                              allow="web-share; fullscreen" 
-                              style={{border: 'none', width: '100%', position: 'static', display: 'block', margin: 0}} 
-                              src="https://puzzleme.amuselabs.com/pmm/wordrow?id=abc1d1ef&set=7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570&embed=1" 
-                              aria-label="Puzzle Me Game"
-                              title="Wordle Puzzle"
-                            />
+                          <div className="mb-4">
+                            <a
+                              href="https://puzzleme.amuselabs.com/pmm/wordrow?id=abc1d1ef&set=7a4e8efe7a3cd99c74fba82206174ed7f74167bfd60132bc0b40a7094f116570"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                            >
+                              <ExternalLink className="w-5 h-5" />
+                              Open Wordle-puzzel
+                            </a>
                           </div>
-                          <p className="text-sm text-gray-600 mt-2">
-                            Voltooi de Wordle-puzzel om deze regel te behalen.
+                          <p className="text-sm text-gray-600">
+                            Klik op de knop hierboven om de Wordle-puzzel in een nieuw tabblad te openen. Voltooi de puzzel om deze regel te behalen.
                           </p>
                         </div>
                       )}
